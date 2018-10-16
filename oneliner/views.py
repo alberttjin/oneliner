@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from rest_framework import status
+from django.http import Http404
 
 # Create your views here.
 class UserList(APIView):
@@ -23,11 +24,18 @@ class UserList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserDetail(APIView):
+    
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
 
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
+    def get(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 # class AddTask(APIView):

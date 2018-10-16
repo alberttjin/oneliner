@@ -23,6 +23,12 @@ class UserSerializer(serializers.ModelSerializer):
              validated_data['password'])
         return user
 
+    # def update(self, instance, validated_data):
+    #     instance.email = validated_data.get('email', instance.email)
+    #     instance.username = validated_data.get('username', instance.username)
+    #     instance.save()
+    #     return instance
+
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password')
