@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import Http404
 
-from .serializers import UserSerializer, TaskSerializer, ProfileSerializer
+from .serializers import UserSerializer, UserLoginSerializer, TaskSerializer, ProfileSerializer
 from .models import Task, Profile
 
 
@@ -18,12 +18,22 @@ class ProfileList(APIView):
         serializer = ProfileSerializer(profiles, many=True)
         return Response(serializer.data)
     
+class UserRegister(APIView):
+
     def post(self, request, format=None):
-        serializer = ProfileSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            profile = serializer.save()
-            if profile:
+            user = serializer.save()
+            if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserLogin(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

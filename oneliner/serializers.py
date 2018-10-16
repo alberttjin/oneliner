@@ -15,9 +15,35 @@ class UserSerializer(serializers.ModelSerializer):
             )
     password = serializers.CharField()
 
+    def create(self, validated_data):
+        user = User.objects.create_user (
+                validated_data['username'],
+                validated_data['email'],
+                validated_data['password']
+            )
+        return user
+
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password')
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(allow_blank=True, read_only=True)
+    email = serializers.EmailField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password', 'token')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, data):
+        login_email = data.get('email', None)
+        login_username = data.get('username', None)
+        if not email and not username:
+            raise serializers.ValidationError('A username or password is required to login')
+        return data
 
 class TaskSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=True)
@@ -42,16 +68,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=True)
-    tasks = TaskSerializer(required=True, many=True)
-
-    def create(self, validated_data):
-        user = User.objects.create_user (
-                validated_data['username'],
-                validated_data['email'],
-                validated_data['password']
-            )
-        profile = user.profile
-        return profile
+    tasks = TaskSerializer(many=True)
 
     class Meta:
         model = Profile
