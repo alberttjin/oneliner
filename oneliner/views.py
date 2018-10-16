@@ -6,28 +6,28 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import Http404
 
-from .serializers import UserSerializer, TaskSerializer
-from .models import Task
+from .serializers import UserSerializer, TaskSerializer, ProfileSerializer
+from .models import Task, Profile
 
 
 # Create your views here.
-class UserList(APIView):
+class ProfileList(APIView):
     
     def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
+        profiles = Profile.objects.all()
+        serializer = ProfileSerializer(profiles, many=True)
         return Response(serializer.data)
     
     def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
+        serializer = ProfileSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            if user:
+            profile = serializer.save()
+            if profile:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetail(APIView):
+class ProfileDetail(APIView):
     
     def get_object(self, pk):
         try:
@@ -37,7 +37,8 @@ class UserDetail(APIView):
 
     def get(self, request, pk, format=None):
         user = self.get_object(pk)
-        serializer = UserSerializer(user)
+        profile = user.profile
+        serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
 
