@@ -9,6 +9,7 @@ from django.http import Http404
 
 from .serializers import UserSerializer, TaskSerializer, ProfileSerializer
 from .models import Task, Profile
+from .permissions import GetUserPermission, GetTaskPermission
 
 
 # Create your views here.
@@ -55,9 +56,13 @@ class ProfileDetail(APIView):
     """
     View endpoint to GET the profile of a specific user through id sent in url stored in variable pk.  
     """
+    permission_classes = (GetUserPermission,)
+
     def get_object(self, pk):
         try:
-            return User.objects.get(pk=pk)
+            user = User.objects.get(pk=pk)
+            self.check_object_permissions(self.request, user)
+            return user
         except User.DoesNotExist:
             raise Http404
 
@@ -72,10 +77,13 @@ class TaskDetail(APIView):
     """
     View endpoint to GET a specific task for a specific user.
     """
+    permission_classes = (GetTaskPermission,)
    
     def get_object(self, pk):
         try:
-            return Task.objects.get(pk=pk)
+            task = Task.objects.get(pk=pk)
+            self.check_object_permissions(self.request, task)
+            return task
         except Task.DoesNotExist:
             raise Http404
 
