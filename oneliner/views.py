@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from django.contrib.auth.models import User
@@ -12,13 +13,17 @@ from .models import Task, Profile
 
 # Create your views here.
 class ProfileList(APIView):
-    
+    authentication_classes = ()
+    permission_classes = ()
+
     def get(self, request, format=None):
         profiles = Profile.objects.all()
         serializer = ProfileSerializer(profiles, many=True)
         return Response(serializer.data)
     
 class UserRegister(APIView):
+    authentication_classes = ()
+    permission_classes = ()
 
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
