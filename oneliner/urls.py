@@ -9,6 +9,8 @@ urlpatterns = [
     path('profiles', views.ProfileList.as_view()),
     path('profiles/<int:pk>', views.ProfileDetail.as_view()),
     path('tasks/<int:pk>', views.TaskDetail.as_view()),
+    path('tasks', views.TaskList.as_view()),
+    path('add-task', views.AddTask.as_view()),
     path('register', views.UserRegister.as_view()),
     path('login', rest_framework_views.obtain_auth_token),
 ]

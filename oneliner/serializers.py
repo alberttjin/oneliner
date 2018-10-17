@@ -60,6 +60,10 @@ class TaskSerializer(serializers.ModelSerializer):
                 repeat_times=validated_data['repeat_times'],
                 repeat_freq=validated_data['repeat_freq'],
             )
+        profile = self.context['profile']
+        print(self.context)
+        profile.tasks.add(task)
+        profile.save()
         return task
 
     class Meta:

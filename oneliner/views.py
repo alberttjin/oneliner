@@ -72,6 +72,32 @@ class ProfileDetail(APIView):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
+class TaskList(APIView):
+    """
+    GET list of tasks for a specific user
+    """
+
+    def get(self, request, format=None):
+        user = request.user
+        profile = user.profile
+        tasks = profile.tasks.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+class AddTask(APIView):
+    """
+    POST to create a new task and assign it to the user making the request
+    """
+    
+    def post(self, request, format=None):
+        user = request.user
+        profile = user.profile
+        serializer = TaskSerializer(data=request.data, context={'profile': profile})
+        if serializer.is_valid():
+            task = serializer.save()
+            if task:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TaskDetail(APIView):
     """
