@@ -7,9 +7,9 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import Http404
 
-from .serializers import UserSerializer, TaskSerializer, ProfileSerializer
-from .models import Task, Profile
-from .permissions import GetUserPermission, GetTaskPermission
+from .serializers import UserSerializer, TaskSerializer, ProfileSerializer, EventSerializer
+from .models import Task, Profile, Event
+from .permissions import GetUserPermission, GetTaskPermission, GetEventPermission
 
 
 class ProfileList(APIView):
@@ -61,6 +61,10 @@ class UserRegister(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+"""
+******************************* TASKS ************************************
+"""
+
 class TaskList(APIView):
     """
     GET list of tasks for a specific user
@@ -108,3 +112,57 @@ class AddTask(APIView):
             if task:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""
+******************************* EVENTS ************************************
+"""
+
+class AddEvent(APIView):
+    """
+    POST to create a new event and assign to profile making request
+    """
+
+    def post(self, request, format=None):
+        user = request.user
+        profile = user.profile
+        serializer = EventSerializer(data=request.data, context={'profile': profile})
+        if serializer.is_valid():
+            event = serializer.save()
+            if event:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EventDetail(APIView):
+    """
+    View endpoint to GET a specific event from a profile
+    """
+
+    permission_classes = (GetEventPermission,)
+   
+    def get_object(self, pk):
+        try:
+            event = Event.objects.get(pk=pk)
+            self.check_object_permissions(self.request, event)
+            return event
+        except Event.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        event = self.get_object(pk)
+        serializer = EventSerializer(event)
+        return Response(serializer.data)
+
+class EventList(APIView):
+    """
+    GET list of tasks for a specific user
+    """
+
+    def get(self, request, format=None):
+        start_date_time = request.query_params.get('start_date_time')
+        end_date_time = request.query_params.get('end_date_time')
+        user = request.user
+        profile = user.profile
+        events = profile.events.all().filter(start__range=(start_date_time, end_date_time))
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data)

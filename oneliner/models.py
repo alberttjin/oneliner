@@ -36,7 +36,7 @@ class Task(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    #events = models.ManyToManyField(Event)
+    events = models.ManyToManyField(Event)
     tasks = models.ManyToManyField(Task)
 
     @receiver(post_save, sender=User)

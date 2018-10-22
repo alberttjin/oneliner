@@ -13,6 +13,9 @@ urlpatterns = [
     path('add-task', views.AddTask.as_view()),
     path('register', views.UserRegister.as_view()),
     path('login', rest_framework_views.obtain_auth_token),
+    path('events', views.EventList.as_view()),
+    path('events/<int:pk>', views.EventDetail.as_view()),
+    path('add-event', views.AddEvent.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
