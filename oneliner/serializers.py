@@ -47,6 +47,15 @@ class TaskSerializer(serializers.ModelSerializer):
         profile.save()
         return task
 
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.date = validated_data.get('date', instance.date)
+        instance.repeat_inf = validated_data.get('repeat_inf', instance.repeat_inf)
+        instance.repeat_times = validated_data.get('repeat_times', instance.repeat_times)
+        instance.repeat_freq = validated_data.get('repeat_freq', instance.repeat_freq)
+        instance.save()
+        return instance
+
     class Meta:
         model = Task
         fields = ('id', 'name', 'date', 'repeat_inf', 'repeat_times', 'repeat_freq')
