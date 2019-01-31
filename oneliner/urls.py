@@ -11,11 +11,13 @@ urlpatterns = [
     path('tasks/<int:pk>', views.TaskDetail.as_view()),
     path('tasks', views.TaskList.as_view()),
     path('add-task', views.AddTask.as_view()),
+    path('complete-task', views.CompleteTask.as_view()),
     path('register', views.UserRegister.as_view()),
     path('login', rest_framework_views.obtain_auth_token),
     path('events', views.EventList.as_view()),
     path('events/<int:pk>', views.EventDetail.as_view()),
     path('add-event', views.AddEvent.as_view()),
+    path('complete-event', views.CompleteEvent.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

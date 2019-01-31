@@ -59,6 +59,7 @@ class TaskSerializer(serializers.ModelSerializer):
     repeat_inf = serializers.IntegerField()
     repeat_times = serializers.IntegerField()
     repeat_freq = serializers.IntegerField()
+    completed = serializers.BooleanField()
 
     def create(self, validated_data):
         task = Task.objects.create (
@@ -84,7 +85,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'date', 'repeat_inf', 'repeat_times', 'repeat_freq')
+        fields = ('id', 'name', 'date', 'repeat_inf', 'repeat_times', 'repeat_freq', 'completed')
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=True)

@@ -75,7 +75,7 @@ class TaskList(APIView):
         end_date = request.query_params.get('end_date')
         user = request.user
         profile = user.profile
-        tasks = profile.tasks.all().filter(date__range=(start_date, end_date))
+        tasks = profile.tasks.all().filter(date__range=(start_date, end_date), completed=False)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -123,6 +123,21 @@ class AddTask(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CompleteTask(APIView):
+    """
+    POST to mark a task as completed
+    """
+    
+    def post(self, request, format=None):
+        user = request.user
+        profile = user.profile
+        tasks = user.profile.tasks.all()
+        task = Task.objects.get(pk=request.data['id'])
+        if task in tasks:
+            task.completed = True
+            task.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 """
 ******************************* EVENTS ************************************
@@ -173,6 +188,22 @@ class EventList(APIView):
         end_date_time = request.query_params.get('end_date_time')
         user = request.user
         profile = user.profile
-        events = profile.events.all().filter(start__range=(start_date_time, end_date_time))
+        events = profile.events.all().filter(start__range=(start_date_time, end_date_time), completed=False)
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
+
+class CompleteEvent(APIView):
+    """
+    POST to mark an event as completed
+    """
+    
+    def post(self, request, format=None):
+        user = request.user
+        profile = user.profile
+        events = user.profile.events.all()
+        event = Event.objects.get(pk=request.data['id'])
+        if event in events:
+            event.completed = True
+            event.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
