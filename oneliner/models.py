@@ -16,7 +16,7 @@ class Event(models.Model):
     name = models.CharField(max_length=100, blank=True, default='')
     start = models.DateTimeField()
     end = models.DateTimeField()
-    completed = models.BooleanField(default=False)
+    completed = models.BooleanField(blank=True, default=False)
     repeat_inf = models.BooleanField(default=False)
     repeat_times = models.IntegerField()
     repeat_freq = models.IntegerField()
